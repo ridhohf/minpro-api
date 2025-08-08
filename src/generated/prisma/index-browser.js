@@ -120,12 +120,74 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.SampleScalarFieldEnum = {
+exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  code: 'code',
+  email: 'email',
+  password: 'password',
+  fullName: 'fullName',
+  role: 'role',
+  points: 'points',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EventScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  location: 'location',
+  category: 'category',
+  price: 'price',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  availableSeats: 'availableSeats',
+  organizerId: 'organizerId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TicketTypeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  price: 'price',
+  eventId: 'eventId'
+};
+
+exports.Prisma.VoucherScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  discount: 'discount',
+  quota: 'quota',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  eventId: 'eventId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  eventId: 'eventId',
+  ticketTypeId: 'ticketTypeId',
+  quantity: 'quantity',
+  totalPrice: 'totalPrice',
+  usedPoints: 'usedPoints',
+  finalPrice: 'finalPrice',
+  voucherId: 'voucherId',
+  paymentProofUrl: 'paymentProofUrl',
+  status: 'status',
+  expiredAt: 'expiredAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReviewScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  eventId: 'eventId',
+  rating: 'rating',
+  comment: 'comment',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -133,14 +195,37 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.SampleOrderByRelevanceFieldEnum = {
-  name: 'name',
-  code: 'code'
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.Role = exports.$Enums.Role = {
+  CUSTOMER: 'CUSTOMER',
+  ORGANIZER: 'ORGANIZER',
+  ADMIN: 'ADMIN'
+};
+
+exports.TransactionStatus = exports.$Enums.TransactionStatus = {
+  WAITING_PAYMENT: 'WAITING_PAYMENT',
+  WAITING_CONFIRMATION: 'WAITING_CONFIRMATION',
+  DONE: 'DONE',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED',
+  CANCELED: 'CANCELED'
+};
 
 exports.Prisma.ModelName = {
-  Sample: 'Sample'
+  User: 'User',
+  Event: 'Event',
+  TicketType: 'TicketType',
+  Voucher: 'Voucher',
+  Transaction: 'Transaction',
+  Review: 'Review'
 };
 
 /**

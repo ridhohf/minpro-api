@@ -10,16 +10,110 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Role {
+  CUSTOMER
+  ORGANIZER
+  ADMIN
+}
 
-  @@map("samples") // if you want to use snake_case format
+enum TransactionStatus {
+  WAITING_PAYMENT
+  WAITING_CONFIRMATION
+  DONE
+  REJECTED
+  EXPIRED
+  CANCELED
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  password      String
+  fullName      String
+  role          Role          @default(CUSTOMER)
+  points        Int           @default(0)
+  createdEvents Event[]       @relation("OrganizerEvents")
+  transactions  Transaction[]
+  reviews       Review[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Event {
+  id             String        @id @default(uuid())
+  name           String
+  description    String
+  location       String
+  category       String
+  price          Int // in IDR, 0 = free
+  startDate      DateTime
+  endDate        DateTime
+  availableSeats Int
+  ticketTypes    TicketType[]
+  organizer      User          @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  organizerId    String
+  vouchers       Voucher[]
+  transactions   Transaction[]
+  reviews        Review[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model TicketType {
+  id           String        @id @default(uuid())
+  name         String
+  price        Int
+  event        Event         @relation(fields: [eventId], references: [id])
+  eventId      String
+  transactions Transaction[] // ✅ relasi balik ke Transaction
+}
+
+model Voucher {
+  id           String        @id @default(uuid())
+  code         String        @unique
+  discount     Int // in IDR
+  quota        Int
+  startDate    DateTime
+  endDate      DateTime
+  event        Event         @relation(fields: [eventId], references: [id])
+  eventId      String
+  transactions Transaction[] // ✅ relasi balik ke Transaction
+  createdAt    DateTime      @default(now())
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  user            User              @relation(fields: [userId], references: [id])
+  userId          String
+  event           Event             @relation(fields: [eventId], references: [id])
+  eventId         String
+  ticketType      TicketType?       @relation(fields: [ticketTypeId], references: [id])
+  ticketTypeId    String?
+  quantity        Int
+  totalPrice      Int // price x quantity
+  usedPoints      Int               @default(0)
+  finalPrice      Int // totalPrice - usedPoints - voucher discount
+  voucher         Voucher?          @relation(fields: [voucherId], references: [id])
+  voucherId       String?
+  paymentProofUrl String?
+  status          TransactionStatus
+  expiredAt       DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  rating    Int // 1 - 5
+  comment   String
+  createdAt DateTime @default(now())
 }
